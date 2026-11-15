@@ -1,0 +1,118 @@
+name: CI
+
+# Billing note (private repositories only; public repos are free and unmetered):
+#   ubuntu = 1x, windows = 2x, macos = 10x per minute.
+# The 3x3 matrix used to bill ~40 minutes per push. Now a push to main bills
+# roughly 8, and a pull request roughly 3:
+#   lint     1 job   ubuntu
+#   test     2 jobs  ubuntu 3.11 + 3.13        (every event)
+#   extended 2 jobs  windows + macos 3.12      (main / manual only)
+#   build    1 job   ubuntu
+# Keep it that way: put anything expensive behind a `if:` guard.
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "LICENSE"
+      - ".gitignore"
+      - ".gitattributes"
+      - ".editorconfig"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONUTF8: "1"
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade ruff
+      - run: python -m ruff check repoArchiver tests
+
+  test:
+    name: test (ubuntu, py${{ matrix.python }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      # Some tests create commits and annotated tags; give git an identity.
+      - name: Configure git
+        run: |
+          git config --global user.name "repoArchiver CI"
+          git config --global user.email "ci@example.invalid"
+
+      - name: Run tests
+        run: python -m unittest discover -s tests -v
+
+  # Cross-platform coverage without paying macOS prices on every pull request.
+  extended:
+    name: test (${{ matrix.os }}, py${{ matrix.python }})
+    if: github.event_name != 'pull_request'
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            python: "3.12"
+          - os: macos-latest
+            python: "3.12"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Configure git
+        run: |
+          git config --global user.name "repoArchiver CI"
+          git config --global user.email "ci@example.invalid"
+
+      - name: Run tests
+        run: python -m unittest discover -s tests -v
+
+  build:
+    name: build and install
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade build
+      - run: python -m build
+      - name: Install the wheel and smoke-test it
+        run: |
+          python -m pip install dist/*.whl
+          repoArchiver --version
+          repoArchiver --help > /dev/null
+          repoArchiver --lang zh --help > /dev/null

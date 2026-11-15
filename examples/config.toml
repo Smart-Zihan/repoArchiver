@@ -1,0 +1,51 @@
+# Sample configuration for repoArchiver.
+#
+# Copy to ~/.repoArchiver/config.toml (or pass any path with -c/--config).
+# Every key is optional; the defaults are shown here.
+
+# Where archives are stored. A relative path is resolved against the current
+# working directory. `--archives-dir` overrides this for one run.
+archives_dir = "archives"
+
+# Interface language: "en" or "zh". Also settable with --lang or
+# $REPOARCHIVER_LANG; the OS locale is used when none of them is set.
+# language = "en"
+
+# Progress output: "auto" (bars only on a terminal), "always", "never".
+# --progress / --quiet override this.
+progress = "auto"
+
+# Refresh tracked archives before reading commands (list / inspect / restore).
+trace = true
+
+# Throttle the on-launch trace: skip it when the last sync is younger than
+# this. Accepts "30m", "6h", "1d" or a number of seconds. 0 = always.
+trace_interval = "0"
+
+# --- authentication -------------------------------------------------------
+# Tokens only raise rate limits and unlock private repositories; public
+# archives work without them.
+
+# Historic GitHub key (equivalent to [tokens] "github.com").
+# token = "ghp_xxx"
+
+# Per-host tokens; "*" is the fallback for every host.
+[tokens]
+# "github.com" = "ghp_xxx"
+# "gitlab.com" = "glpat-xxx"
+# "gitea.example.org" = "xxx"
+# "*" = "shared-token"
+
+# Default forge for self-hosted instances whose host name says nothing:
+# github / gitlab / gitea / bitbucket.
+# platform = "gitea"
+
+# --- network --------------------------------------------------------------
+# Retries for 5xx / 408 / 425 / 429 and transport errors.
+retries = 3
+# Seconds before a single request is considered dead.
+timeout = 60
+# Minimum delay between two requests to the same host (politeness).
+min_interval = 0
+# Resume interrupted asset downloads with a Range request.
+resume = true

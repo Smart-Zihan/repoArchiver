@@ -1,0 +1,26 @@
+# Normalize line endings in the repository, keep binaries untouched.
+* text=auto eol=lf
+
+*.py text eol=lf
+*.md text eol=lf
+*.toml text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Archives and fixtures are binary; never diff or merge them.
+*.bundle binary
+*.zip binary
+*.tar binary
+*.tar.gz binary
+*.tgz binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+
+# A changelog merge should keep both sides.
+CHANGELOG.md merge=union

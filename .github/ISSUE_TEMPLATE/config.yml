@@ -1,0 +1,10 @@
+# Issue 模板配置
+# 「New issue」页面上会额外出现一个跳转到 Discussions 的入口。
+blank_issues_enabled: true
+contact_links:
+  - name: Questions and usage help
+    url: https://github.com/Smart-Zihan/repoArchiver/discussions
+    about: Ask how something works. Issues are for bug reports and feature requests.
+  - name: 使用问题与讨论
+    url: https://github.com/Smart-Zihan/repoArchiver/discussions
+    about: 使用中的疑问请在这里提问；issue 用于 bug 报告和功能建议。

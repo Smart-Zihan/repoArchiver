@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "repoArchiver"
+version = "0.1.0"
+description = "Archive a git repository as a self-contained bundle plus release metadata, keep it current, and restore from it."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "repoArchiver contributors" }]
+keywords = [
+    "git",
+    "bundle",
+    "archive",
+    "backup",
+    "releases",
+    "cli",
+    "offline",
+]
+dependencies = []
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Natural Language :: English",
+    "Natural Language :: Chinese (Simplified)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Version Control :: Git",
+    "Topic :: System :: Archiving :: Backup",
+    "Typing :: Typed",
+]
+
+[project.optional-dependencies]
+dev = ["build>=1.2", "ruff>=0.6"]
+
+[project.urls]
+Homepage = "https://github.com/Smart-Zihan/repoArchiver"
+Repository = "https://github.com/Smart-Zihan/repoArchiver"
+Issues = "https://github.com/Smart-Zihan/repoArchiver/issues"
+Changelog = "https://github.com/Smart-Zihan/repoArchiver/blob/main/CHANGELOG.md"
+
+[project.scripts]
+repoArchiver = "repoArchiver.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["repoArchiver*"]
+
+[tool.setuptools.package-data]
+repoArchiver = ["py.typed"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+# Long user-facing messages are single strings on purpose.
+ignore = ["E501", "SIM105"]
